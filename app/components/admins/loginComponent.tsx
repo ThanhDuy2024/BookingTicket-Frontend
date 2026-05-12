@@ -54,9 +54,8 @@ export default function LoginPage() {
         toast.success(
           "Đăng nhập thành công!"
         );
-        setTimeout(() => {
-          router.push("/admin/dashboard");
-        }, 1000)
+        router.refresh();
+        router.push("/admin/dashboard");
       } else {
         toast.error(
           "Tài khoản hoặc mật khẩu không đúng!"
