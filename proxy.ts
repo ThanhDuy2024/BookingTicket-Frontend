@@ -1,38 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose"; // Sử dụng jose thay vì jsonwebtoken
 
-export async function proxy(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const token = request.cookies.get("adminToken")?.value;
-  const isLoginPage = request.nextUrl.pathname === "/admin/login";
-  const secret = new TextEncoder().encode("DONGUYENDIEUANH");
+  const { pathname } = request.nextUrl;
+  
+  const isLoginPage = pathname === "/admin/login";
 
-  // 1. Nếu đã có token mà cố vào trang login -> đẩy sang dashboard
+  // 1. Nếu ĐÃ CÓ cookie mà cố tình vào trang login -> Đẩy sang dashboard
   if (token && isLoginPage) {
     return NextResponse.redirect(new URL("/admin/dashboard", request.url));
   }
 
-  // 2. Nếu chưa có token mà vào các trang admin khác -> đẩy về login
+  // 2. Nếu CHƯA CÓ cookie mà vào các trang admin (ngoại trừ trang login) -> Đẩy về login
   if (!token && !isLoginPage) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
-  // 3. Verify token bằng thư viện jose
-  if (token) {
-    try {
-      await jwtVerify(token, secret);
-      return NextResponse.next();
-    } catch (error) {
-      console.error("JWT verify failed:", error);
-      // Nếu token sai signature hoặc hết hạn -> xóa cookie và đẩy về login
-      const response = NextResponse.redirect(new URL("/admin/login", request.url));
-      response.cookies.delete("adminToken");
-      return response;
-    }
-  }
-
+  // 3. Các trường hợp còn lại (có cookie vào dashboard, hoặc chưa cookie vào login) -> Cho đi tiếp
   return NextResponse.next();
 }
 
+// Cấu hình để middleware chỉ chạy cho các route bắt đầu bằng /admin
 export const config = {
   matcher: ["/admin/:path*"],
 };
