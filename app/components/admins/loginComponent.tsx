@@ -55,7 +55,8 @@ export default function LoginPage() {
         toast.success(
           "Đăng nhập thành công!"
         );
-        router.push("/admin/dashboard")
+        document.cookie = `adminToken=${response.cookie}; path=/`;
+        window.location.href = "/admin/dashboard"
         
       } else {
         toast.error(
