@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability */
 "use client";
 import { LoginApi } from "@/app/api/admin/adminApi";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -54,8 +55,7 @@ export default function LoginPage() {
         toast.success(
           "Đăng nhập thành công!"
         );
-        router.refresh();
-        router.push("/admin/dashboard");
+        window.location.href = "/admin/dashboard"
       } else {
         toast.error(
           "Tài khoản hoặc mật khẩu không đúng!"
