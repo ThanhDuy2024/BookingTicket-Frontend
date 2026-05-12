@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose"; // Sử dụng jose thay vì jsonwebtoken
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const token = request.cookies.get("adminToken")?.value;
   const isLoginPage = request.nextUrl.pathname === "/admin/login";
   const secret = new TextEncoder().encode("DONGUYENDIEUANH");
