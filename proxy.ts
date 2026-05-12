@@ -1,40 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { jwtVerify } from "jose"; // Sử dụng jose thay vì jsonwebtoken
 
-export function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const token = request.cookies.get("adminToken")?.value;
+  const isLoginPage = request.nextUrl.pathname === "/admin/login";
+  const secret = new TextEncoder().encode("DONGUYENDIEUANH");
 
-  const isLoginPage =
-    request.nextUrl.pathname === "/admin/login";
-
-  // Nếu đã login mà vào login page
+  // 1. Nếu đã có token mà cố vào trang login -> đẩy sang dashboard
   if (token && isLoginPage) {
-    return NextResponse.redirect(
-      new URL("/admin/dashboard", request.url)
-    );
+    return NextResponse.redirect(new URL("/admin/dashboard", request.url));
   }
 
-  // Chưa login
+  // 2. Nếu chưa có token mà vào các trang admin khác -> đẩy về login
   if (!token && !isLoginPage) {
-    return NextResponse.redirect(
-      new URL("/admin/login", request.url)
-    );
+    return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
-  // Verify token
+  // 3. Verify token bằng thư viện jose
   if (token) {
     try {
-      jwt.verify(
-        token,
-        "DONGUYENDIEUANH"
-      );
-
+      await jwtVerify(token, secret);
       return NextResponse.next();
-
-    } catch {
-      return NextResponse.redirect(
-        new URL("/admin/login", request.url)
-      );
+    } catch (error) {
+      console.error("JWT verify failed:", error);
+      // Nếu token sai signature hoặc hết hạn -> xóa cookie và đẩy về login
+      const response = NextResponse.redirect(new URL("/admin/login", request.url));
+      response.cookies.delete("adminToken");
+      return response;
     }
   }
 
