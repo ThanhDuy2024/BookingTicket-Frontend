@@ -26,7 +26,7 @@ export function proxy(request: NextRequest) {
     try {
       jwt.verify(
         token,
-        String(process.env.JWT_PASSWORD)
+        "DONGUYENDIEUANH"
       );
 
       return NextResponse.next();
