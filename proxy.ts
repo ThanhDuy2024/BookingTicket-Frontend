@@ -1,28 +1,46 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import jwt, { JwtPayload } from "jsonwebtoken";
-// This function can be marked `async` if using `await` inside
+import { NextRequest, NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
+
 export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const token = request.cookies.get("adminToken")?.value;
 
-  if (pathname === '/admin/login') {
-    return NextResponse.next();
-  }
-  const adminToken = request.cookies.get("adminToken")?.value;
-  let decodeAdmin;
-  if (adminToken) {
-    decodeAdmin = jwt.verify(String(adminToken), String(process.env.JWT_PASSWORD)) as JwtPayload;
-  } else {
-    return NextResponse.redirect(new URL('/admin/login', request.url));
+  const isLoginPage =
+    request.nextUrl.pathname === "/admin/login";
+
+  // Nếu đã login mà vào login page
+  if (token && isLoginPage) {
+    return NextResponse.redirect(
+      new URL("/admin/dashboard", request.url)
+    );
   }
 
-  if (pathname.startsWith("/admin")) {
-    if (!decodeAdmin) {
-      return NextResponse.redirect(new URL('/admin/login', request.url));
+  // Chưa login
+  if (!token && !isLoginPage) {
+    return NextResponse.redirect(
+      new URL("/admin/login", request.url)
+    );
+  }
+
+  // Verify token
+  if (token) {
+    try {
+      jwt.verify(
+        token,
+        String(process.env.JWT_PASSWORD)
+      );
+
+      return NextResponse.next();
+
+    } catch {
+      return NextResponse.redirect(
+        new URL("/admin/login", request.url)
+      );
     }
   }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ["/admin/:path*"],
 };
