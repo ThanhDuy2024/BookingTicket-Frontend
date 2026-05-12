@@ -4,18 +4,19 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  Film, 
-  Users, 
-  MapPin, 
-  Settings, 
-  User, 
+import {
+  LayoutDashboard,
+  Film,
+  Users,
+  MapPin,
+  Settings,
+  User,
   LogOut,
   ChevronDown,
   X,
-  ChevronRight 
+  ChevronRight
 } from "lucide-react";
+import axiosInstance from "@/app/lib/axios";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -24,23 +25,23 @@ interface SidebarProps {
 }
 
 const menuItems = [
-  { 
-    id: "dashboard", 
-    label: "Dashboard", 
+  {
+    id: "dashboard",
+    label: "Dashboard",
     icon: LayoutDashboard,
     href: "/admin/dashboard",
     matchPattern: /^\/admin\/dashboard$/
   },
-  { 
-    id: "movies", 
-    label: "Quản lý phim", 
+  {
+    id: "movies",
+    label: "Quản lý phim",
     icon: Film,
     href: "/admin/movies",
     matchPattern: /^\/admin\/movies/
   },
-  { 
-    id: "categories", 
-    label: "Danh mục", 
+  {
+    id: "categories",
+    label: "Danh mục",
     icon: () => (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -49,23 +50,23 @@ const menuItems = [
     href: "/admin/categories",
     matchPattern: /^\/admin\/categories/
   },
-  { 
-    id: "theaters", 
-    label: "Rạp chiếu", 
+  {
+    id: "theaters",
+    label: "Rạp chiếu",
     icon: MapPin,
     href: "/admin/theaters",
     matchPattern: /^\/admin\/theaters/
   },
-  { 
-    id: "users", 
-    label: "Người dùng", 
+  {
+    id: "users",
+    label: "Người dùng",
     icon: Users,
     href: "/admin/users",
     matchPattern: /^\/admin\/users/
   },
-  { 
-    id: "settings", 
-    label: "Cài đặt", 
+  {
+    id: "settings",
+    label: "Cài đặt",
     icon: Settings,
     href: "/admin/settings",
     matchPattern: /^\/admin\/settings/
@@ -99,6 +100,26 @@ export default function Sidebar({ isOpen, isMobile, onClose }: SidebarProps) {
     }
   }, [isMobile, onClose]);
 
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchData = async () => {
+      try {
+        const res = await axiosInstance.get("/admin/auth/token");
+        if (mounted) {
+          console.log(res.data);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
   // Kiểm tra menu có active không
   const isMenuActive = (item: typeof menuItems[0]) => {
     return item.matchPattern?.test(pathname || '') || false;
@@ -124,7 +145,7 @@ export default function Sidebar({ isOpen, isMobile, onClose }: SidebarProps) {
               <X className="h-5 w-5" />
             </button>
           )}
-          
+
           <div className="flex items-center gap-4">
             <div className="h-14 w-14 bg-gradient-to-br from-emerald-500 via-teal-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-xl ring-2 ring-white/30">
               <Film className="h-7 w-7 text-white drop-shadow-lg" />
@@ -143,7 +164,7 @@ export default function Sidebar({ isOpen, isMobile, onClose }: SidebarProps) {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = isMenuActive(item);
-            
+
             return (
               <Link
                 key={item.id}
@@ -152,8 +173,8 @@ export default function Sidebar({ isOpen, isMobile, onClose }: SidebarProps) {
                 className={`
                   group flex items-center gap-4 p-4 rounded-2xl transition-all duration-200 border border-transparent
                   hover:border-slate-200 hover:bg-slate-50/50 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
-                  ${isActive 
-                    ? 'bg-gradient-to-r from-emerald-500/10 to-teal-500/10 !border-emerald-200/50 text-emerald-700 shadow-lg shadow-emerald-200/50 ring-2 ring-emerald-200/50' 
+                  ${isActive
+                    ? 'bg-gradient-to-r from-emerald-500/10 to-teal-500/10 !border-emerald-200/50 text-emerald-700 shadow-lg shadow-emerald-200/50 ring-2 ring-emerald-200/50'
                     : 'text-slate-700 hover:text-slate-900'
                   }
                 `}
@@ -161,8 +182,8 @@ export default function Sidebar({ isOpen, isMobile, onClose }: SidebarProps) {
                 {/* Icon Container */}
                 <div className={`
                   h-10 w-10 rounded-xl flex items-center justify-center transition-all duration-200 flex-shrink-0
-                  ${isActive 
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-600 shadow-lg shadow-emerald-300/50 text-white ring-1 ring-white/50' 
+                  ${isActive
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-600 shadow-lg shadow-emerald-300/50 text-white ring-1 ring-white/50'
                     : 'bg-slate-100/50 group-hover:bg-slate-200 text-slate-600 group-hover:text-slate-800'
                   }
                 `}>
@@ -191,7 +212,7 @@ export default function Sidebar({ isOpen, isMobile, onClose }: SidebarProps) {
 
         {/* Profile & Logout */}
         <div className="p-6 border-t border-slate-200/50 space-y-4 mt-auto">
-          <div 
+          <div
             className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 transition-all duration-200 cursor-pointer hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
             onClick={handleLinkClick}
           >

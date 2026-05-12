@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/immutability */
 "use client";
 import { LoginApi } from "@/app/api/admin/adminApi";
