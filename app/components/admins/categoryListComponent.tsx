@@ -1,11 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import {
   Plus,
   Search,
-  Pencil,
-  Trash2,
   ChevronLeft,
   ChevronRight,
   RotateCcw,
@@ -16,55 +13,34 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { GetCategory } from "@/app/api/admin/categoryApi";
 
-const categories = [
-  {
-    id: 1,
-    name: "Phim hành động",
-    image: "https://picsum.photos/100/100?1",
-    status: true,
-    updatedBy: "Nguyễn Văn A",
-    updatedAt: "15/05/2026 10:30",
-  },
-  {
-    id: 2,
-    name: "Phim kinh dị",
-    image: "https://picsum.photos/100/100?2",
-    status: false,
-    updatedBy: "Trần Văn B",
-    updatedAt: "14/05/2026 14:20",
-  },
-  {
-    id: 3,
-    name: "Phim hoạt hình",
-    image: "https://picsum.photos/100/100?3",
-    status: true,
-    updatedBy: "Lê Văn C",
-    updatedAt: "13/05/2026 09:15",
-  },
-  {
-    id: 4,
-    name: "Phim tình cảm",
-    image: "https://picsum.photos/100/100?4",
-    status: true,
-    updatedBy: "Phạm Văn D",
-    updatedAt: "12/05/2026 08:00",
-  },
-];
-
 export default function CategoryListPage() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    setPage(1);
+  };
+
+  const handleChangeStatus = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setStatus(e.target.value);
+    setPage(1);
+  };
+
+
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         setLoading(true);
 
-        const data = await GetCategory();
-
-        console.log(data);
+        const data = await GetCategory(search, status, String(page));
 
         setCategories(data.data);
+        setTotalPage(data.totalPage)
       } catch (error) {
         console.log(error);
       } finally {
@@ -73,7 +49,7 @@ export default function CategoryListPage() {
     };
 
     fetchCategories();
-  }, []);
+  }, [search, status, page]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br p-3 sm:p-4 lg:p-6 bg-white rounded-2xl shadow-lg">
@@ -135,6 +111,7 @@ export default function CategoryListPage() {
                 type="text"
                 placeholder="Tìm kiếm danh mục..."
                 className="grow text-sm sm:text-base"
+                onChange={handleChange}
               />
             </label>
 
@@ -150,10 +127,12 @@ export default function CategoryListPage() {
                 focus:shadow-lg
                 sm:h-14 sm:text-base
               "
+              value={status}
+              onChange={handleChangeStatus}
             >
-              <option>Tất cả trạng thái</option>
-              <option>Hoạt động</option>
-              <option>Ngưng hoạt động</option>
+              <option value={""}>Tất cả trạng thái</option>
+              <option value={"active"}>Hoạt động</option>
+              <option value={"inactive"}>Ngưng hoạt động</option>
             </select>
 
             {/* REFRESH */}
@@ -175,10 +154,10 @@ export default function CategoryListPage() {
         </div>
 
         {/* MOBILE CARD */}
-        <MobileCategoryList categories={categories}/>
+        <MobileCategoryList categories={categories} />
 
         {/* DESKTOP TABLE */}
-        <CategoryListPc categories={categories}/>
+        <CategoryListPc categories={categories} />
 
         {/* FOOTER */}
         <div
@@ -196,52 +175,55 @@ export default function CategoryListPage() {
 
           {/* PAGINATION */}
           <div className="join mx-auto sm:mx-0">
+            {/* PREV */}
             <button
+              disabled={page === 1}
+              onClick={() => setPage(page - 1)}
               className="
-                join-item btn rounded-l-2xl
-                border-slate-200 bg-white
-                transition-all duration-300
-                hover:bg-slate-100
-              "
+      join-item btn rounded-l-2xl
+      border-slate-200 bg-white
+      transition-all duration-300
+      hover:bg-slate-100
+      disabled:cursor-not-allowed
+      disabled:opacity-50
+    "
             >
               <ChevronLeft size={18} />
             </button>
 
-            <button
-              className="
-                join-item btn border-slate-200
-                bg-violet-600 text-white
-                hover:bg-violet-700
-              "
-            >
-              1
-            </button>
+            {/* PAGE */}
+            {Array.from({ length: totalPage }, (_, index) => {
+              const pageNumber = index + 1;
 
-            <button
-              className="
-                join-item btn border-slate-200
-                bg-white hover:bg-slate-100
-              "
-            >
-              2
-            </button>
+              return (
+                <button
+                  key={pageNumber}
+                  onClick={() => setPage(pageNumber)}
+                  className={`
+          join-item btn border-slate-200
+          ${page === pageNumber
+                      ? "bg-violet-600 text-white hover:bg-violet-700"
+                      : "bg-white hover:bg-slate-100"
+                    }
+        `}
+                >
+                  {pageNumber}
+                </button>
+              );
+            })}
 
+            {/* NEXT */}
             <button
+              disabled={page === totalPage}
+              onClick={() => setPage(page + 1)}
               className="
-                join-item btn border-slate-200
-                bg-white hover:bg-slate-100
-              "
-            >
-              3
-            </button>
-
-            <button
-              className="
-                join-item btn rounded-r-2xl
-                border-slate-200 bg-white
-                transition-all duration-300
-                hover:bg-slate-100
-              "
+      join-item btn rounded-r-2xl
+      border-slate-200 bg-white
+      transition-all duration-300
+      hover:bg-slate-100
+      disabled:cursor-not-allowed
+      disabled:opacity-50
+    "
             >
               <ChevronRight size={18} />
             </button>
