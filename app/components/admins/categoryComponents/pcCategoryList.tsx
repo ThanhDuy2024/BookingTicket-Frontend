@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
 import { Pencil, Trash2 } from "lucide-react"
-
+import Link from "next/link"
 export const CategoryListPc = ({
   categories,
 }: any) => {
@@ -87,7 +87,7 @@ export const CategoryListPc = ({
 
                 {/* STATUS */}
                 <td>
-                  {category.status ? (
+                  {category.status === "active" ? (
                     <div
                       className="
                             inline-flex items-center gap-2
@@ -127,7 +127,7 @@ export const CategoryListPc = ({
                 {/* ACTION */}
                 <td>
                   <div className="flex justify-center gap-3">
-                    <button
+                    <Link
                       className="
                             btn btn-sm h-11 w-11 rounded-xl border-0
                             bg-amber-100 text-amber-600
@@ -136,9 +136,10 @@ export const CategoryListPc = ({
                             hover:scale-105
                             hover:bg-amber-200
                           "
+                      href={`/admin/categories/edit/${category.id}`}
                     >
                       <Pencil size={18} />
-                    </button>
+                    </Link>
 
                     <button
                       className="

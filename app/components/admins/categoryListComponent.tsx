@@ -12,6 +12,7 @@ import { MobileCategoryList } from "./categoryComponents/mobileCategoryList";
 import { useEffect } from "react";
 import { useState } from "react";
 import { GetCategory } from "@/app/api/admin/categoryApi";
+import Link from "next/link";
 
 export default function CategoryListPage() {
   const [categories, setCategories] = useState([]);
@@ -66,7 +67,7 @@ export default function CategoryListPage() {
             </p>
           </div>
 
-          <button
+          <Link
             className="
               btn h-12 w-full rounded-2xl border-0
               bg-gradient-to-r from-indigo-600 to-violet-600
@@ -77,10 +78,11 @@ export default function CategoryListPage() {
               hover:shadow-[0_12px_35px_rgba(79,70,229,0.45)]
               sm:h-14 sm:w-auto sm:text-base
             "
+            href={"/admin/categories/create"}
           >
             <Plus size={20} />
             Tạo mới danh mục
-          </button>
+          </Link>
         </div>
 
         {/* FILTER */}
@@ -163,8 +165,8 @@ export default function CategoryListPage() {
         <div
           className="
             mt-6 flex flex-col gap-4
-            rounded-3xl border border-slate-100
-            bg-white p-4 shadow-lg
+            rounded-3xl
+            p-4
             sm:flex-row sm:items-center sm:justify-between
             lg:mt-8
           "

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 import { Pencil, Trash2 } from "lucide-react"
+import Link from "next/link"
 
 export const MobileCategoryList = ({
   categories
@@ -44,7 +45,7 @@ export const MobileCategoryList = ({
                   </p>
                 </div>
 
-                {category.status ? (
+                {category.status === "active" ? (
                   <div
                     className="
                           inline-flex items-center gap-2
@@ -77,17 +78,18 @@ export const MobileCategoryList = ({
 
               {/* ACTION */}
               <div className="mt-4 flex gap-3">
-                <button
+                <Link
                   className="
                         btn btn-sm flex-1 rounded-xl border-0
                         bg-amber-100 text-amber-600
                         shadow-[0_4px_12px_rgba(251,191,36,0.25)]
                         hover:bg-amber-200
                       "
+                  href={`/admin/categories/edit/${category.id}`}
                 >
                   <Pencil size={16} />
                   Sửa
-                </button>
+                </Link>
 
                 <button
                   className="
