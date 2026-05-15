@@ -5,6 +5,12 @@ import { useState, useEffect, useCallback } from "react";
 import { X, Menu, ChevronLeft } from "lucide-react";
 import Sidebar from "../../../components/admins/sidebarComponent";
 import { Toaster } from "sonner";
+import { Be_Vietnam_Pro } from "next/font/google";
+
+const beVietnam = Be_Vietnam_Pro({
+  subsets: ["latin", "vietnamese"],
+  weight: ["400", "500", "600", "700", "800"],
+});
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -19,7 +25,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     setMounted(true);
     const mediaQuery = window.matchMedia("(max-width: 1023px)");
     setIsMobile(mediaQuery.matches);
-    
+
     const handleResize = () => setIsMobile(mediaQuery.matches);
     mediaQuery.addEventListener("change", handleResize);
     return () => mediaQuery.removeEventListener("change", handleResize);
@@ -44,7 +50,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-emerald-50 relative overflow-hidden">
+    <div className={`${beVietnam.className} min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-emerald-50 relative overflow-hidden`}
+    >
       {/* Animated Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-grid-slate-100/[0.15] bg-[size:100px_100px] animate-pulse" />
@@ -77,15 +84,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </header>
 
         {/* Sidebar */}
-        <Sidebar 
-          isOpen={sidebarOpen} 
+        <Sidebar
+          isOpen={sidebarOpen}
           isMobile={isMobile}
           onClose={closeSidebar}
         />
 
         {/* Overlay */}
         {sidebarOpen && isMobile && (
-          <div 
+          <div
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden"
             onClick={closeSidebar}
           />
@@ -103,7 +110,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       </div>
 
       {/* Toaster */}
-      <Toaster 
+      <Toaster
         position="top-right"
         richColors
         expand={true}
