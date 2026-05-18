@@ -36,7 +36,7 @@ const menuItems = [
     id: "movies",
     label: "Quản lý phim",
     icon: Film,
-    href: "/admin/movies",
+    href: "/admin/movies/list",
     matchPattern: /^\/admin\/movies/,
   },
 
