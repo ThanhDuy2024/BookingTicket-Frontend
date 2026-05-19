@@ -21,3 +21,8 @@ export const PutCategory = async (formData: any, id: string) => {
   const response = await axiosForm.put(`/admin/category/update/${id}`, formData);
   return response.data;
 }
+
+export const GetCategoryMovie = async () => {
+  const response = await axiosInstance.get(`/admin/category/list?search=&status=&page=1&limit=100`);
+  return response.data;
+}

@@ -90,7 +90,7 @@ export default function MovieList() {
               hover:shadow-[0_12px_35px_rgba(79,70,229,0.45)]
               sm:h-14 sm:w-auto sm:text-base
             "
-            href={"/admin/categories/create"}
+            href={"/admin/movies/create"}
           >
             <Plus size={20} />
             Tạo mới phim
